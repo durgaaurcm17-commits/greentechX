@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GreenTechX - Smart Waste Management</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2D7A7B",
+                        background: "#121414",
+                        surface: "#1B1F1F"
+                    },
+                    fontFamily: {
+                        display: ["Inter"],
+                        serif: ["Playfair Display", "serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121414;
+        }
+    </style>
+</head>
+
+<body class="text-slate-100">
+
+    <!-- Background Dot Pattern -->
+    <div class="fixed inset-0 pointer-events-none opacity-[0.03] z-0" style="background-image: radial-gradient(#2D7A7B 0.5px, transparent 0.5px);
+     background-size: 24px 24px;"></div>
+
+    <div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background shadow-xl z-10">
+
+        <!-- HEADER WITH LOGO -->
+        <header class="flex items-center bg-surface p-4 border-b border-white/5 sticky top-0 z-10">
+            <div class="flex size-10 items-center justify-center rounded-lg overflow-hidden">
+                <!-- Replace with your own logo path if needed -->
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyIfC9vDjDustAaQ-K9yVwhUd-w2kKM9jwlkKaSEzfB2mmNtP_BBl2Yyt6fehM2__6KlQ9IJ_o32g62OUlz6LxJn9E8XLw07LfEQb6Kmnk1zjRDLRhyS75xyYqFdUMqBiukNJchxiXeeeG7975zMIX_8G25FvbSs4svnNZDrOio6yI2RND-W5DRqD5Zd5NuQcRsT_u4fuE0zwbNhx9ZbIMlghs5WyCWkBR-fukDVhCCC_RH4V6spjZBdJc8srpfvnnhI6zEE66tB7Q"
+                    class="w-full h-full object-cover" alt="GreenTechX Logo">
+            </div>
+            <h2 class="text-white text-xl font-bold tracking-tight flex-1 ml-3">
+                GreenTechX
+            </h2>
+        </header>
+
+        <main class="flex-1 overflow-y-auto">
+
+            <!-- HERO -->
+            <div class="px-6 pt-8 pb-4">
+                <h1 class="text-4xl font-extrabold tracking-tight">You are</h1>
+                <p class="text-slate-400 mt-2 text-sm font-medium">
+                    Select your portal to continue
+                </p>
+            </div>
+
+            <!-- ROLE CARDS -->
+            <div class="grid gap-4 p-6">
+
+                <!-- PUBLIC -->
+                <a href="/public"
+                    class="group relative overflow-hidden bg-surface rounded-xl p-4 border border-white/5 hover:scale-[1.02] transition">
+
+                    <div class="flex items-center gap-4">
+                        <div class="flex size-16 items-center justify-center rounded-lg text-primary bg-primary/10">
+                            <span class="material-symbols-outlined text-4xl">person</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Public</h3>
+                            <p class="text-sm text-slate-400">Report waste issues</p>
+                        </div>
+                        <span class="ml-auto material-symbols-outlined text-slate-400">chevron_right</span>
+                    </div>
+                </a>
+
+                <!-- WORKER -->
+                <a href="/worker-login"
+                    class="group relative overflow-hidden bg-surface rounded-xl p-4 border border-white/5 hover:scale-[1.02] transition">
+
+                    <div class="flex items-center gap-4">
+                        <div class="flex size-16 items-center justify-center rounded-lg bg-primary text-white">
+                            <span class="material-symbols-outlined text-4xl">local_shipping</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Worker</h3>
+                            <p class="text-sm text-slate-400">View optimized routes</p>
+                        </div>
+                        <span class="ml-auto material-symbols-outlined text-slate-400">chevron_right</span>
+                    </div>
+                </a>
+
+                <!-- ADMIN -->
+                <a href="/admin-login"
+                    class="group relative overflow-hidden bg-surface rounded-xl p-4 border border-white/5 hover:scale-[1.02] transition">
+
+                    <div class="flex items-center gap-4">
+                        <div class="flex size-16 items-center justify-center rounded-lg bg-white text-slate-900">
+                            <span class="material-symbols-outlined text-4xl">admin_panel_settings</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Admin</h3>
+                            <p class="text-sm text-slate-400">System management</p>
+                        </div>
+                        <span class="ml-auto material-symbols-outlined text-slate-400">chevron_right</span>
+                    </div>
+                </a>
+
+            </div>
+
+            <!-- QUOTE SECTION -->
+            <div class="px-6 py-12 mt-4 space-y-8 text-center">
+
+                <div class="relative py-4">
+                    <span class="material-symbols-outlined text-7xl absolute -top-8 -left-4 text-primary/5">
+                        format_quote
+                    </span>
+
+                    <p class="text-2xl font-serif italic text-slate-300 leading-relaxed relative z-10">
+                        “Don’t wait for others. Be the reason your street shines.”
+                    </p>
+                </div>
+
+                <div class="pt-8 flex justify-center">
+                    <div class="h-px w-24 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+</body>
+
+</html>

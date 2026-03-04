@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard | Smart Waste System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+    <!-- TomTom SDK -->
+    <link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps.css'>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js"></script>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/services/services-web.min.js"></script>
+</head>
+
+<body class="worker-page">
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>WastePro</h2>
+            </div>
+            <nav>
+                <div class="nav-item active">Route Optimizer</div>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <header class="top-bar">
+                <h1>Optimal Route Planning</h1>
+                <div class="user-info">Worker: #7412</div>
+            </header>
+
+            <div class="grid">
+                <div class="card map-card">
+                    <h3>Service Area Map</h3>
+                    <div id="map" style="height: 400px; width: 100%; border-radius: 12px;"></div>
+                </div>
+
+                <div class="card stats-card">
+                    <h3>Route Details</h3>
+                    <div id="route-list" class="list-container">
+                        <p class="empty-msg">Fetching bin data...</p>
+                    </div>
+                    <div class="actions-grid">
+                        <button id="optimizeFilledBtn" class="btn-action red">Collect Filled Only (60%+)</button>
+                        <button id="optimizeReadyBtn" class="btn-action green">Collect All Ready Bins</button>
+                        <button onclick="collectAllBins()" class="btn-action blue">Collect All Bins</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/worker.js') }}"></script>
+</body>
+
+</html>

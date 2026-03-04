@@ -1,0 +1,138 @@
+{
+    "bins": {
+        "bin1": {
+            "lat": 9.9252,
+            "lng": 78.1198,
+            "level": 30,
+            "priority": "medium",
+            "status": true,
+            "time": 0
+        },
+        "bin2": {
+            "lat": 9.9265,
+            "lng": 78.1212,
+            "level": 50,
+            "priority": "high",
+            "status": true,
+            "time": 0
+        },
+        "bin3": {
+            "lat": 9.9240,
+            "lng": 78.1170,
+            "level": 20,
+            "priority": "low",
+            "status": true,
+            "time": 0
+        },
+        "bin4": {
+            "lat": 9.9230,
+            "lng": 78.1230,
+            "level": 60,
+            "priority": "high",
+            "status": true,
+            "time": 0
+        },
+        "bin5": {
+            "lat": 9.9225,
+            "lng": 78.1205,
+            "level": 40,
+            "priority": "medium",
+            "status": true,
+            "time": 0
+        },
+        "bin6": {
+            "lat": 9.9210,
+            "lng": 78.1180,
+            "level": 55,
+            "priority": "high",
+            "status": true,
+            "time": 0
+        },
+        "bin7": {
+            "lat": 9.9200,
+            "lng": 78.1195,
+            "level": 35,
+            "priority": "medium",
+            "status": true,
+            "time": 0
+        },
+        "bin8": {
+            "lat": 9.9195,
+            "lng": 78.1220,
+            "level": 45,
+            "priority": "medium",
+            "status": true,
+            "time": 0
+        },
+        "bin9": {
+            "lat": 9.9180,
+            "lng": 78.1210,
+            "level": 70,
+            "priority": "high",
+            "status": true,
+            "time": 0
+        }
+    },
+    "reports": {
+        "report1": {
+            "binId": "bin2",
+            "description": "Overflowing",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report2": {
+            "binId": "bin4",
+            "description": "Needs cleaning",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report3": {
+            "binId": "bin6",
+            "description": "Damaged lid",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report4": {
+            "binId": "bin1",
+            "description": "Overflowing",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report5": {
+            "binId": "bin5",
+            "description": "Full",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report6": {
+            "binId": "bin3",
+            "description": "Needs cleaning",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report7": {
+            "binId": "bin7",
+            "description": "Overflowing",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report8": {
+            "binId": "bin8",
+            "description": "Full",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report9": {
+            "binId": "bin9",
+            "description": "Damaged",
+            "status": "pending",
+            "timestamp": 0
+        },
+        "report10": {
+            "binId": "bin4",
+            "description": "Overflowing",
+            "status": "pending",
+            "timestamp": 0
+        }
+    }
+}

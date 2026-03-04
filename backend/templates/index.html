@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Waste Report | Smart Waste System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- TomTom SDK -->
+    <link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps.css'>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js"></script>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/services/services-web.min.js"></script>
+</head>
+
+<body class="public-page">
+    <div class="container">
+        <header>
+            <h1>Report Garbage Issue</h1>
+            <p>Help us keep our city clean by reporting overflows or waste issues.</p>
+        </header>
+
+        <form id="reportForm" class="glass-form">
+            <div id="map" style="height: 400px; width: 100%; border-radius: 12px; margin-bottom: 20px;"></div>
+
+            <div class="form-group">
+                <label for="reporter">Your Name</label>
+                <input type="text" id="reporter" placeholder="Your Name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="issueType">Issue Type</label>
+                <select id="issueType">
+                    <option value="Overflowing">Overflowing</option>
+                    <option value="Bad Smell">Bad Smell</option>
+                    <option value="Damaged Bin">Damaged Bin</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Describe the issue</label>
+                <textarea id="description" placeholder="Describe the issue (e.g., bin overflowing near market)"
+                    required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="imageInput">Image (Optional)</label>
+                <input type="file" id="imageInput" accept="image/*">
+            </div>
+
+            <div class="actions" style="display: flex; gap: 10px;">
+                <button type="button" onclick="useMyLocation()" class="btn-action">Use My Location</button>
+                <button type="submit" class="btn-primary" style="flex: 1;">Submit Report</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const TOMTOM_KEY = "IcOngI16Mupy2rv8kAW9bGxbp9JXRv5N";
+    </script>
+    <script src="{{ url_for('static', filename='js/public.js') }}"></script>
+</body>
+
+</html>

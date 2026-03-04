@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Smart Waste System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="admin-page">
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>WasteAdmin</h2>
+            </div>
+            <nav>
+                <div class="nav-item active">Citizen Reports</div>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <header class="top-bar">
+                <h1>Citizen Problem Reports</h1>
+                <div class="status-filters">
+                    <span class="badge active">All</span>
+                    <span class="badge">Pending</span>
+                    <span class="badge">Resolved</span>
+                </div>
+            </header>
+
+            <div class="reports-grid" id="reports-container">
+                <!-- Reports will be injected here -->
+                <p>Loading reports...</p>
+            </div>
+        </main>
+    </div>
+    <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+        <span class="close-btn">&times;</span>
+        <img id="modalImage" class="modal-content">
+    </div>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+
+</html>
