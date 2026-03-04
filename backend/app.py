@@ -3,6 +3,7 @@ import os
 import requests
 import uuid
 from werkzeug.utils import secure_filename
+from flask_cors import CORS
 from dotenv import load_dotenv
 from firebase_admin import db
 from utils import database, get_bucket
@@ -13,6 +14,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey123"   # change in production
+CORS(app) # Allow cross-origin requests
 
 # Upload Configuration
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
@@ -25,76 +27,31 @@ optimizer = RouteOptimizer()
 TOMTOM_API_KEY = os.getenv("TOMTOM_API_KEY")
 
 # =========================
-# HOME
-# =========================
-@app.route("/")
-def home():
-    return render_template("home.html")
-
-# =========================
-# PUBLIC PORTAL
-# =========================
-@app.route("/public")
-def public():
-    return render_template("index.html")
-
-# =========================
-# WORKER LOGIN & DASHBOARD
-# =========================
-@app.route("/worker-login", methods=["GET", "POST"])
-def worker_login():
-    if request.method == "POST":
-        worker_id = request.form["worker_id"]
-        password = request.form["password"]
-
-        if worker_id == "worker" and password == "1234":
-            session["worker_logged_in"] = True
-            return redirect(url_for("worker_dashboard"))
-        else:
-            return render_template("worker_login.html", error="Invalid credentials")
-
-    return render_template("worker_login.html")
-
-@app.route("/worker")
-def worker_dashboard():
-    if not session.get("worker_logged_in"):
-        return redirect(url_for("worker_login"))
-    return render_template("worker.html")
-
-# =========================
-# ADMIN LOGIN & DASHBOARD
-# =========================
-@app.route("/admin-login", methods=["GET", "POST"])
-def admin_login():
-    if request.method == "POST":
-        admin_id = request.form["admin_id"]
-        password = request.form["password"]
-
-        if admin_id == "admin" and password == "admin123":
-            session["admin_logged_in"] = True
-            return redirect(url_for("admin_dashboard"))
-        else:
-            return render_template("admin_login.html", error="Invalid credentials")
-
-    return render_template("admin_login.html")
-
-@app.route("/admin")
-def admin_dashboard():
-    if not session.get("admin_logged_in"):
-        return redirect(url_for("admin_login"))
-    return render_template("admin.html")
-
-# =========================
-# LOGOUT
-# =========================
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("home"))
-
-# =========================
 # API ROUTES (Preserved & Enhanced)
 # =========================
+@app.route("/", methods=["GET"])
+def health_check():
+    return jsonify({"status": "healthy", "message": "Smart Waste API is running"}), 200
+
+@app.route("/api/admin-login", methods=["POST"])
+def api_admin_login():
+    data = request.json
+    admin_id = data.get("admin_id")
+    password = data.get("password")
+
+    if admin_id == "admin" and password == "admin123":
+        return jsonify({"success": True, "redirect": "admin.html"})
+    return jsonify({"success": False, "error": "Invalid admin credentials"}), 401
+
+@app.route("/api/worker-login", methods=["POST"])
+def api_worker_login():
+    data = request.json
+    worker_id = data.get("worker_id")
+    password = data.get("password")
+
+    if worker_id == "worker" and password == "1234":
+        return jsonify({"success": True, "redirect": "worker.html"})
+    return jsonify({"success": False, "error": "Invalid worker credentials"}), 401
 @app.route("/api/bins", methods=["GET"])
 def get_bins():
     try:
@@ -112,9 +69,13 @@ def get_bins():
 
 @app.route('/api/bins/update/<bin_id>', methods=['POST'])
 def update_bin(bin_id):
-    data = request.json
-    db_ref.child(f'bins/{bin_id}').update(data)
-    return jsonify({"success": True})
+    try:
+        data = request.json
+        db.reference("bins").child(bin_id).update(data)
+        return jsonify({"success": True})
+    except Exception as e:
+        print("UPDATE ERROR:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route("/api/reports", methods=["GET"])
 def get_reports():
@@ -182,12 +143,18 @@ def upload_file():
             return jsonify({"error": "No selected file"}), 400
         
         if file:
+            # 1. Generate unique filename
             filename = str(uuid.uuid4()) + "_" + secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
             
-            # Return the relative path for the frontend to use
-            image_url = f"/static/uploads/{filename}"
+            # 2. Upload to Firebase Storage
+            blob = bucket.blob(f"reports/{filename}")
+            blob.upload_from_file(file, content_type=file.content_type)
+            
+            # 3. Make it publicly accessible
+            blob.make_public()
+            
+            # 4. Return the public URL
+            image_url = blob.public_url
             return jsonify({"success": True, "image_url": image_url})
             
     except Exception as e:
@@ -199,17 +166,24 @@ def optimize_route():
     try:
         data = request.json
         bins = data.get("bins", [])
+        start_coords = data.get("start", [9.9252, 78.1198]) # Default to Madurai center
 
         if not bins:
             return jsonify({"error": "No bins provided"}), 400
 
-        # Format locations as lng,lat:lng,lat
-        locations = ":".join(
-            [f"{b['lng']},{b['lat']}" for b in bins]
-        )
+        # 1. Use strategic optimizer to get the best order
+        optimized_bin_sequence = optimizer.optimize_route(start_coords, bins)
+
+        # 2. Format locations for TomTom API (lng,lat)
+        # Sequence: Start -> Bin1 -> Bin2 -> ...
+        locations_list = [f"{start_coords[1]},{start_coords[0]}"]
+        for b in optimized_bin_sequence:
+            locations_list.append(f"{b['lng']},{b['lat']}")
+            
+        locations = ":".join(locations_list)
 
         url = f"https://api.tomtom.com/routing/1/calculateRoute/{locations}/json"
-
+        
         params = {
             "key": TOMTOM_API_KEY,
             "routeType": "fastest",
@@ -217,7 +191,13 @@ def optimize_route():
         }
 
         response = requests.get(url, params=params)
-        return jsonify(response.json())
+        route_data = response.json()
+        
+        return jsonify({
+            "success": True,
+            "optimized_bins": optimized_bin_sequence,
+            "route": route_data
+        })
 
     except Exception as e:
         print("Optimization Error:", e)

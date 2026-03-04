@@ -1,14 +1,17 @@
 import os
 import firebase_admin
 from firebase_admin import credentials, db, storage
+from dotenv import load_dotenv
+
+load_dotenv()
 
 if not firebase_admin._apps:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     cred_path = os.path.join(BASE_DIR, "serviceAccountKey.json")
     cred = credentials.Certificate(cred_path)
     firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://smartwaste-26682-default-rtdb.asia-southeast1.firebasedatabase.app',
-        'storageBucket': 'smartwaste-26682.firebasestorage.app'
+        'databaseURL': os.getenv('DATABASE_URL'),
+        'storageBucket': os.getenv('STORAGE_BUCKET', 'smartwaste-26682.firebasestorage.app')
     })
 
 # Reference to database root

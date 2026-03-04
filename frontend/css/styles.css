@@ -312,3 +312,34 @@ input[type="file"] {
     color: white;
     cursor: pointer;
 }
+
+/* Route Steps */
+.route-step {
+    transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.route-step:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.step-num {
+    box-shadow: 0 0 10px rgba(0, 122, 255, 0.3);
+}
+
+.btn-collect {
+    background: var(--accent-green) !important;
+    transition: all 0.2s ease;
+    min-width: 60px;
+}
+
+.btn-collect:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.route-summary {
+    border: 1px solid rgba(0, 122, 255, 0.2);
+}
+

@@ -200,28 +200,109 @@ function optimizeFilledRoute(bins) {
     optimizeRoute(filledBins);
 }
 
-function optimizeRoute(bins) {
-    if (map.getLayer("route")) {
-        map.removeLayer("route");
-        map.removeSource("route");
+async function optimizeRoute(bins) {
+    if (!bins || bins.length === 0) return;
+
+    const list = document.querySelector("#route-list");
+    if (list) list.innerHTML = "<p>Calculating strategic route...</p>";
+
+    // 1. Get current location (fallback to Madurai center)
+    let startLat = 9.9252;
+    let startLng = 78.1198;
+
+    try {
+        const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        startLat = pos.coords.latitude;
+        startLng = pos.coords.longitude;
+    } catch (e) {
+        console.warn("Geolocation failed, using default center.");
     }
 
-    const locations = bins
-        .map(bin => `${bin.lng},${bin.lat}`)
-        .join(":");
-
-    tt.services.calculateRoute({
-        key: TOMTOM_KEY,
-        locations: locations,
-        computeBestOrder: true
-    })
-        .then(response => {
-            const route = response.routes[0];
-            drawRouteOnMap(route);
-        })
-        .catch(error => {
-            console.log("Routing failed:", error);
+    // 2. Call backend optimizer
+    try {
+        const res = await fetch(`${API_BASE}/optimize-route`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                bins: bins,
+                start: [startLat, startLng]
+            })
         });
+
+        const data = await res.json();
+        if (data.success && data.route.routes) {
+            const route = data.route.routes[0];
+            drawRouteOnMap(route);
+            displayOptimizedLegend(data.optimized_bins, route.summary);
+        } else {
+            alert("Optimization failed: " + (data.error || "Unknown error"));
+        }
+    } catch (err) {
+        console.error("Routing error:", err);
+    }
+}
+
+function displayOptimizedLegend(bins, summary) {
+    const list = document.querySelector("#route-list");
+    if (!list) return;
+
+    const distKm = (summary.lengthInMeters / 1000).toFixed(1);
+    const timeMin = Math.round(summary.travelTimeInSeconds / 60);
+
+    let html = `
+        <div class="route-summary" style="margin-bottom: 20px; padding: 10px; background: rgba(0, 122, 255, 0.1); border-radius: 8px;">
+            <div style="display:flex; justify-content:space-between; font-weight:600; color:#007AFF;">
+                <span>STOPS: ${bins.length}</span>
+                <span>${distKm} km | ${timeMin} min</span>
+            </div>
+        </div>
+        <div class="steps-container">
+    `;
+
+    bins.forEach((bin, index) => {
+        const isCritical = (bin.level || 0) > 75;
+        html += `
+            <div class="route-step" style="display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; border-left: 2px solid #007AFF; padding-left: 12px;">
+                <div class="step-num" style="background: #007AFF; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;">${index + 1}</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #f8fafc; font-size: 14px;">Bin ${bin.id}</div>
+                    <div style="font-size: 12px; color: ${isCritical ? '#ef4444' : '#94a3b8'};">
+                        ${bin.level}% Full • ${bin.priority || 'Medium'} Priority
+                    </div>
+                </div>
+                <button onclick="markAsCollected('${bin.id}')" class="btn-collect" style="padding: 4px 8px; font-size: 10px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">Collect</button>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    list.innerHTML = `<h4>Optimized Route</h4>` + html;
+}
+
+async function markAsCollected(binId) {
+    if (!confirm(`Mark bin ${binId} as collected? This will reset fill level to 0.`)) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/bins/update/${binId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                level: 0,
+                status: "active",
+                lastCollected: Date.now()
+            })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            alert(`Bin ${binId} marked as collected!`);
+            loadBins(); // Refresh
+        }
+    } catch (err) {
+        console.error("Collection error:", err);
+    }
 }
 
 function drawRouteOnMap(route) {
@@ -277,3 +358,4 @@ function drawRouteOnMap(route) {
 // Expose to global for onclick targets
 window.collectAllBins = collectAllBins;
 window.optimizeRoute = optimizeRoute;
+window.markAsCollected = markAsCollected;
