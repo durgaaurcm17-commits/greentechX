@@ -232,15 +232,25 @@ async function optimizeRoute(bins) {
         });
 
         const data = await res.json();
-        if (data.success && data.route.routes) {
+        if (data.success && data.route && data.route.routes && data.route.routes.length > 0) {
             const route = data.route.routes[0];
             drawRouteOnMap(route);
             displayOptimizedLegend(data.optimized_bins, route.summary);
         } else {
-            alert("Optimization failed: " + (data.error || "Unknown error"));
+            console.error("Backend Error:", data);
+            const errorMsg = data.error || "Route not found or API error. Check if TomTom API key is valid.";
+            alert("Optimization failed: " + errorMsg);
+
+            if (list) {
+                list.innerHTML = `<h4>Optimization Error</h4><p style='color: #ef4444'>${errorMsg}</p>`;
+            }
         }
     } catch (err) {
         console.error("Routing error:", err);
+        alert("Optimization failed: Connection error to backend.");
+        if (list) {
+            list.innerHTML = "<h4>Optimization Error</h4><p style='color: #ef4444'>Could not connect to optimization server.</p>";
+        }
     }
 }
 
@@ -306,16 +316,26 @@ async function markAsCollected(binId) {
 }
 
 function drawRouteOnMap(route) {
-    if (!route) return;
+    if (!route || !route.legs) return;
 
     let coordinates = [];
     route.legs.forEach(leg => {
+        if (!leg.points) return;
         leg.points.forEach(point => {
-            coordinates.push([point.lng, point.lat]);
+            // TomTom API uses 'latitude' and 'longitude', our app uses 'lat' and 'lng'
+            const lng = point.longitude || point.lng;
+            const lat = point.latitude || point.lat;
+
+            if (lng !== undefined && lat !== undefined && !isNaN(lng) && !isNaN(lat)) {
+                coordinates.push([lng, lat]);
+            }
         });
     });
 
-    if (!coordinates.length) return;
+    if (coordinates.length === 0) {
+        console.warn("No valid coordinates found in route data.");
+        return;
+    }
 
     const geojson = {
         type: "Feature",

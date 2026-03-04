@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for, session
+from flask import Flask, render_template, jsonify, request, redirect, url_for, session, send_from_directory
 import os
 import requests
 import uuid
@@ -12,7 +12,12 @@ from traffic_engine import TrafficEngine
 
 load_dotenv()
 
-app = Flask(__name__)
+# Initialize Flask with frontend as template and static folders
+frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+app = Flask(__name__, 
+            template_folder=frontend_path,
+            static_folder=frontend_path,
+            static_url_path='')
 app.secret_key = "supersecretkey123"   # change in production
 CORS(app) # Allow cross-origin requests
 
@@ -25,6 +30,42 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 bucket = get_bucket()
 optimizer = RouteOptimizer()
 TOMTOM_API_KEY = os.getenv("TOMTOM_API_KEY")
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(app.static_folder, "assets/favicon.ico") if os.path.exists(os.path.join(app.static_folder, "assets/favicon.ico")) else ("", 204)
+
+# =========================
+# STATIC FRONTEND ROUTES
+# =========================
+@app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/report")
+def report_page():
+    return render_template("index.html")
+
+@app.route("/admin")
+def admin_page():
+    return render_template("admin.html")
+
+@app.route("/worker")
+def worker_page():
+    return render_template("worker.html")
+
+@app.route("/admin-login")
+def admin_login_page():
+    return render_template("admin_login.html")
+
+@app.route("/worker-login")
+def worker_login_page():
+    return render_template("worker_login.html")
+
+# Combined static file server (for js, css, assets)
+@app.route("/<path:filename>")
+def serve_static(filename):
+    return send_from_directory(app.static_folder, filename)
 
 # =========================
 # API ROUTES (Preserved & Enhanced)
@@ -40,7 +81,7 @@ def api_admin_login():
     password = data.get("password")
 
     if admin_id == "admin" and password == "admin123":
-        return jsonify({"success": True, "redirect": "admin.html"})
+        return jsonify({"success": True, "redirect": "/admin"})
     return jsonify({"success": False, "error": "Invalid admin credentials"}), 401
 
 @app.route("/api/worker-login", methods=["POST"])
@@ -50,7 +91,7 @@ def api_worker_login():
     password = data.get("password")
 
     if worker_id == "worker" and password == "1234":
-        return jsonify({"success": True, "redirect": "worker.html"})
+        return jsonify({"success": True, "redirect": "/worker"})
     return jsonify({"success": False, "error": "Invalid worker credentials"}), 401
 @app.route("/api/bins", methods=["GET"])
 def get_bins():
@@ -174,11 +215,11 @@ def optimize_route():
         # 1. Use strategic optimizer to get the best order
         optimized_bin_sequence = optimizer.optimize_route(start_coords, bins)
 
-        # 2. Format locations for TomTom API (lng,lat)
+        # 2. Format locations for TomTom API (lat,long) - EXACT TomTom order
         # Sequence: Start -> Bin1 -> Bin2 -> ...
-        locations_list = [f"{start_coords[1]},{start_coords[0]}"]
+        locations_list = [f"{start_coords[0]},{start_coords[1]}"] # lat,lng
         for b in optimized_bin_sequence:
-            locations_list.append(f"{b['lng']},{b['lat']}")
+            locations_list.append(f"{b['lat']},{b['lng']}") # lat,lng
             
         locations = ":".join(locations_list)
 
@@ -190,9 +231,15 @@ def optimize_route():
             "traffic": "true"
         }
 
+        print(f"DEBUG: Routing request for {len(locations_list)} locations")
         response = requests.get(url, params=params)
         route_data = response.json()
         
+        if response.status_code != 200:
+            print("TOMTOM ERROR:", route_data)
+            error_msg = route_data.get("errorText") or route_data.get("detailedError", {}).get("message") or "TomTom API Error"
+            return jsonify({"success": False, "error": error_msg}), response.status_code
+
         return jsonify({
             "success": True,
             "optimized_bins": optimized_bin_sequence,
@@ -201,7 +248,7 @@ def optimize_route():
 
     except Exception as e:
         print("Optimization Error:", e)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
