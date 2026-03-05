@@ -343,3 +343,58 @@ input[type="file"] {
     border: 1px solid rgba(0, 122, 255, 0.2);
 }
 
+/* --- Mobile Responsiveness --- */
+@media (max-width: 900px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo h2 {
+        margin-bottom: 1rem;
+    }
+
+    nav {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+    }
+
+    .nav-item {
+        margin-bottom: 0;
+        white-space: nowrap;
+        padding: 0.5rem 1rem;
+    }
+
+    .grid {
+        grid-template-columns: 1fr !important;
+        display: flex !important;
+        flex-direction: column-reverse; /* Put map (first in HTML) below the details */
+        gap: 1.5rem;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .stats-bar {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+
+    #map {
+        height: 300px !important; /* Slightly smaller on mobile to keep things compact */
+    }
+}
+
