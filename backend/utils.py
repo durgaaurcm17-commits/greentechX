@@ -1,6 +1,8 @@
 import os
 import firebase_admin
 from firebase_admin import credentials, db, storage
+import cloudinary
+import cloudinary.uploader as uploader
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -23,6 +25,14 @@ if not firebase_admin._apps:
         'databaseURL': os.getenv('DATABASE_URL'),
         'storageBucket': os.getenv('STORAGE_BUCKET', 'smartwaste-26682.firebasestorage.app')
     })
+
+# Cloudinary Configuration
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 
 # Reference to database root
 database = db.reference()

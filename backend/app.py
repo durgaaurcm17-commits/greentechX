@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from dotenv import load_dotenv
 from firebase_admin import db
-from utils import database, get_bucket
+from utils import database, get_bucket, uploader
 from optimizer import RouteOptimizer
 from traffic_engine import TrafficEngine
 
@@ -184,18 +184,11 @@ def upload_file():
             return jsonify({"error": "No selected file"}), 400
         
         if file:
-            # 1. Generate unique filename
-            filename = str(uuid.uuid4()) + "_" + secure_filename(file.filename)
+            # 1. Upload to Cloudinary
+            response = uploader.upload(file, folder="reports")
             
-            # 2. Upload to Firebase Storage
-            blob = bucket.blob(f"reports/{filename}")
-            blob.upload_from_file(file, content_type=file.content_type)
-            
-            # 3. Make it publicly accessible
-            blob.make_public()
-            
-            # 4. Return the public URL
-            image_url = blob.public_url
+            # 2. Return the secure URL
+            image_url = response.get("secure_url")
             return jsonify({"success": True, "image_url": image_url})
             
     except Exception as e:

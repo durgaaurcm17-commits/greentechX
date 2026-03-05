@@ -128,7 +128,7 @@ async function submitReport() {
         }
     } catch (error) {
         console.error("Submission error:", error);
-        alert("Error submitting report. Please check your connection.");
+        alert("Error submitting report: " + error.message);
     } finally {
         submitBtn.innerText = originalText;
         submitBtn.disabled = false;
