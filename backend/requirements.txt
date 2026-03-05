@@ -6,3 +6,4 @@ requests
 firebase-admin
 python-dotenv
 gunicorn
+cloudinary
