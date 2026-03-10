@@ -39,12 +39,16 @@ def favicon():
 # STATIC FRONTEND ROUTES
 # =========================
 @app.route("/")
+def landing():
+    return render_template("index.html")
+
+@app.route("/home")
 def home():
     return render_template("home.html")
 
 @app.route("/report")
 def report_page():
-    return render_template("index.html")
+    return render_template("report.html")
 
 @app.route("/admin")
 def admin_page():

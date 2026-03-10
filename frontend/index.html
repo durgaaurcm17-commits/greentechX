@@ -1,68 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Citizen Waste Report | Smart Waste System</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-
-    <!-- TomTom SDK -->
-    <link rel='stylesheet' type='text/css' href='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps.css'>
-    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js"></script>
-    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/services/services-web.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GreenTechX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2D7A7B",
+                        background: "#121414",
+                        surface: "#1B1F1F"
+                    },
+                    fontFamily: {
+                        display: ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #121414;
+        }
+    </style>
 </head>
 
-<body class="public-page">
-    <div class="container">
-        <header>
-            <a href="/"
-                style="color: #38bdf8; text-decoration: none; font-size: 14px; margin-bottom: 20px; display: inline-block;">←
-                Back to Selection</a>
-            <h1>Report Garbage Issue</h1>
-            <p>Help us keep our city clean by reporting overflows or waste issues.</p>
-        </header>
-
-        <form id="reportForm" class="glass-form">
-            <div id="map" style="height: 400px; width: 100%; border-radius: 12px; margin-bottom: 20px;"></div>
-
-            <div class="form-group">
-                <label for="reporter">Your Name</label>
-                <input type="text" id="reporter" placeholder="Your Name" required>
-            </div>
-
-            <div class="form-group">
-                <label for="issueType">Issue Type</label>
-                <select id="issueType">
-                    <option value="Overflowing">Overflowing</option>
-                    <option value="Bad Smell">Bad Smell</option>
-                    <option value="Damaged Bin">Damaged Bin</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="description">Describe the issue</label>
-                <textarea id="description" placeholder="Describe the issue (e.g., bin overflowing near market)"
-                    required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="imageInput">Image (Optional)</label>
-                <input type="file" id="imageInput" accept="image/*">
-            </div>
-
-            <div class="actions" style="display: flex; gap: 10px;">
-                <button type="button" onclick="useMyLocation()" class="btn-action">Use My Location</button>
-                <button type="submit" class="btn-primary" style="flex: 1;">Submit Report</button>
-            </div>
-        </form>
+<body class="h-screen w-full relative text-white">
+    <!-- Center Container -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center">
+        <!-- Logo (slightly above) -->
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyIfC9vDjDustAaQ-K9yVwhUd-w2kKM9jwlkKaSEzfB2mmNtP_BBl2Yyt6fehM2__6KlQ9IJ_o32g62OUlz6LxJn9E8XLw07LfEQb6Kmnk1zjRDLRhyS75xyYqFdUMqBiukNJchxiXeeeG7975zMIX_8G25FvbSs4svnNZDrOio6yI2RND-W5DRqD5Zd5NuQcRsT_u4fuE0zwbNhx9ZbIMlghs5WyCWkBR-fukDVhCCC_RH4V6spjZBdJc8srpfvnnhI6zEE66tB7Q"
+            class="w-28 h-28 rounded-xl shadow-lg mb-4" alt="GreenTechX Logo" />
+        <!-- Title (center of screen) -->
+        <h1 class="text-3xl font-bold tracking-tight">
+            GreenTechX
+        </h1>
+        <p class="text-slate-400 text-sm mt-2">
+            Smart Waste Management
+        </p>
+        <!-- Button below -->
+        <a href="/home"
+            class="mt-8 px-6 py-3 bg-primary hover:bg-teal-700 transition rounded-lg font-semibold shadow-lg">
+            Go to Home
+        </a>
     </div>
-
-    <script>
-        const TOMTOM_KEY = "IcOngI16Mupy2rv8kAW9bGxbp9JXRv5N";
-    </script>
-    <script src="/js/public.js"></script>
 </body>
 
 </html>
