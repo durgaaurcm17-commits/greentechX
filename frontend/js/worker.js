@@ -291,7 +291,33 @@ function displayOptimizedLegend(bins, summary) {
     list.innerHTML = `<h4>Optimized Route</h4>` + html;
 }
 
+let lastAudioPlayTime = 0;
+
 async function markAsCollected(binId) {
+    const bin = allBins.find(b => b.id === binId);
+
+    if (bin && bin.wasteType) {
+        const wasteType = bin.wasteType.toLowerCase();
+        const audioMap = {
+            plastic: "/audio/plastic.mp3",
+            glass: "/audio/glass.mp3",
+            metal: "/audio/metal.mp3"
+        };
+
+        if (audioMap[wasteType]) {
+            const now = Date.now();
+            if (now - lastAudioPlayTime > 2000) {
+                try {
+                    const audio = new Audio(audioMap[wasteType]);
+                    audio.play().catch(err => console.error("Audio playback error:", err));
+                    lastAudioPlayTime = now;
+                } catch (err) {
+                    console.error("Audio initialization error:", err);
+                }
+            }
+        }
+    }
+
     if (!confirm(`Mark bin ${binId} as collected? This will reset fill level to 0.`)) return;
 
     try {
