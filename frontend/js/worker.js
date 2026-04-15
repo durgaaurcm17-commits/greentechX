@@ -307,10 +307,17 @@ async function markAsCollected(binId) {
         if (audioMap[wasteType]) {
             const now = Date.now();
             if (now - lastAudioPlayTime > 2000) {
+                lastAudioPlayTime = now;
                 try {
                     const audio = new Audio(audioMap[wasteType]);
-                    audio.play().catch(err => console.error("Audio playback error:", err));
-                    lastAudioPlayTime = now;
+                    await new Promise(resolve => {
+                        audio.onended = resolve;
+                        audio.onerror = resolve; // Continue if error
+                        audio.play().catch(err => {
+                            console.error("Audio playback error:", err);
+                            resolve(); // Continue immediately on play error
+                        });
+                    });
                 } catch (err) {
                     console.error("Audio initialization error:", err);
                 }
